@@ -8,12 +8,14 @@ select * from album
 select top 1 employee_id,first_name,last_name,title,levels from employee
 order by levels desc
 
+	
 /* Q2: Which countries have the most Invoices? */
 
 select billing_country,count(billing_country) as counts
 from invoice
 group by billing_country 
 order by counts desc
+
 
 /* Q3: What are top 3 values of total invoice? */
 
@@ -32,6 +34,7 @@ from invoice
 group by billing_city
 order by total desc
 
+
 /* Q5: Who is the best customer? The customer who has spent the most money will be declared the best customer. 
 Write a query that returns the person who has spent the most money.*/
 select * from invoice
@@ -43,6 +46,7 @@ join invoice i
 on c.customer_id = i.customer_id
 group by c.customer_id,c.first_name,c.last_name,i.billing_city
 order by total desc
+
 
 
 /* Question Set 2 - Moderate */
@@ -252,18 +256,18 @@ first find the most spent on music for each country and second filter the data f
 
 
 WITH Customter_with_country AS (
-		SELECT customer.customer_id,first_name,last_name,billing_country,SUM(total) AS total_spending,
-	    ROW_NUMBER() OVER(PARTITION BY billing_country ORDER BY SUM(total) DESC) AS RowNo 
-		FROM invoice
-		JOIN customer ON customer.customer_id = invoice.customer_id
-		GROUP BY customer.customer_id,first_name,last_name,billing_country
-)
+		                SELECT customer.customer_id,first_name,last_name,
+	                        billing_country,SUM(total) AS total_spending,
+	                        ROW_NUMBER() OVER(PARTITION BY billing_country ORDER BY SUM(total) DESC) AS RowNo 
+FROM invoice
+JOIN customer ON customer.customer_id = invoice.customer_id
+GROUP BY customer.customer_id,first_name,last_name,billing_country )
 SELECT * FROM Customter_with_country WHERE RowNo <= 1
 
 
 with Customter_with_country as (
 select customer.customer_id,customer.first_name,customer.last_name,invoice.billing_country,sum(invoice.total) as total_spending,
-ROW_NUMBER() over(partition by invoice.billing_country order by sum(invoice.total) desc) as row_no
+       ROW_NUMBER() over(partition by invoice.billing_country order by sum(invoice.total) desc) as row_no
 from customer
 join invoice on invoice.customer_id = customer.customer_id
 group by customer.customer_id,customer.first_name,customer.last_name,invoice.billing_country
